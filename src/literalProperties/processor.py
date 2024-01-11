@@ -1,10 +1,13 @@
 
 class LiteralProcessor:
 
-    def __init__(self, images: list[str]):
-        None
+    imageToProcess = None
+
+    def __init__(self, image):
+        self.imageToProcess = image
     
-    def process():
-        None
+    def process(self):
+        print("Found image with dimensions: ", self.imageToProcess.shape, " . Processing.")
+        
 
     

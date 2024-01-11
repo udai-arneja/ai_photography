@@ -4,4 +4,5 @@ from src.literalProperties.processor import LiteralProcessor
 if __name__ == '__main__':
     print("Starting Program")
     photoProcessing = PhotoProcessor()
+    photoProcessing.literalProperties()
     print("Ending program")
