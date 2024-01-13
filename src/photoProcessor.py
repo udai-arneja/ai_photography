@@ -26,7 +26,7 @@ class PhotoProcessor:
         None
     
     def loadImages(self):
-        path = 'assets/photoAlbum1/IMG_6978.JPG'
+        path = 'assets/photoAlbum1/IMG_6979.JPG'
         print('Loading image')
         self.imageToProcess = cv2.imread(path)
         print('Image loaded.')
