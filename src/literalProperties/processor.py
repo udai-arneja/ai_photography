@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 
 class LiteralProcessor:
 
@@ -10,9 +11,26 @@ class LiteralProcessor:
     
     def process(self):
         print("Found image with dimensions: ", self.imageToProcess.shape, ". Processing.")
-        print(self.blurrinessValue())
-        print(self.exposureValue())
+        print(self.duplicateGrouping('photoAlbum1', 0))
+        print("Exposure/Histogram Values: "+str(self.exposureValue()))
+        print("Blurriness Value: "+str(self.blurrinessValue()))
 
+    def duplicateGrouping(self, albumName, threshold):
+        # TODO: if subject/photo is the same but has been slightly moved then image gives diff hash
+        # need to see how much by & what other hashings may be better
+        basePath = 'assets/'+albumName
+        albumPhotosFullPath = os.listdir(basePath)
+        
+        albumPhotosHash = {}
+
+        for photo in albumPhotosFullPath:
+            photoPath = basePath+'/'+photo
+            hsh = cv2.img_hash.BlockMeanHash_create()
+            photoHash = hsh.compute(cv2.imread(photoPath))
+            integerHashValue = int.from_bytes(photoHash.tobytes(), byteorder='big', signed=False)
+            albumPhotosHash[integerHashValue] = (photoPath)
+
+        return albumPhotosHash
 
     def blurrinessValue(self):
        return cv2.Laplacian(self.imageToProcess, cv2.CV_64F).var()
@@ -46,6 +64,8 @@ class LiteralProcessor:
                     ( 0, 0, 255), thickness=2)
         cv2.imshow('Source image', self.imageToProcess)
         cv2.imshow('calcHist Demo', histImage)
-        cv2.waitKey()
+        # cv2.waitKey()
+
+        # TODO: get top 5/10, bottom 5/10 average. subtract max value from photo. if remainder is greater than 0 then over/under exposed => return  -1, +1
         return -1
 
