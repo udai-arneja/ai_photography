@@ -1,36 +1,44 @@
 import cv2
 import numpy as np
 import os
+from imagededup.methods import CNN
 
 class LiteralProcessor:
 
     imageToProcess = None
+    basePath = 'assets/'
 
     def __init__(self, image):
         self.imageToProcess = image
     
     def process(self):
         print("Found image with dimensions: ", self.imageToProcess.shape, ". Processing.")
-        print(self.duplicateGrouping('photoAlbum1', 0))
-        print("Exposure/Histogram Values: "+str(self.exposureValue()))
-        print("Blurriness Value: "+str(self.blurrinessValue()))
+        self.duplicateGrouping('photoAlbum1')
+        # print(self.duplicateGroupingHashing('photoAlbum1', 0))
+        # print("Exposure/Histogram Values: "+str(self.exposureValue()))
+        # print("Blurriness Value: "+str(self.blurrinessValue()))
 
-    def duplicateGrouping(self, albumName, threshold):
+    def duplicateGroupingHashing(self, albumName, threshold):
         # TODO: if subject/photo is the same but has been slightly moved then image gives diff hash
         # need to see how much by & what other hashings may be better
-        basePath = 'assets/'+albumName
-        albumPhotosFullPath = os.listdir(basePath)
+        path = self.basePath+albumName
+        albumPhotosFullPath = os.listdir(path)
         
         albumPhotosHash = {}
 
         for photo in albumPhotosFullPath:
-            photoPath = basePath+'/'+photo
+            photoPath = path+'/'+photo
             hsh = cv2.img_hash.BlockMeanHash_create()
             photoHash = hsh.compute(cv2.imread(photoPath))
             integerHashValue = int.from_bytes(photoHash.tobytes(), byteorder='big', signed=False)
             albumPhotosHash[integerHashValue] = (photoPath)
 
         return albumPhotosHash
+    
+    def duplicateGrouping(self, albumName):
+        cnn_encoding = CNN()
+        cnn_encoding.find_duplicates(image_dir=self.basePath+albumName, min_similarity_threshold=0.95, scores=False, outfile='test.json')
+        return
 
     def blurrinessValue(self):
        return cv2.Laplacian(self.imageToProcess, cv2.CV_64F).var()
