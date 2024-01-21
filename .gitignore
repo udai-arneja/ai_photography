@@ -1,4 +1,4 @@
 **/__pycache__/
-photoAlbum1
-photoAlbum2
+*.jpg
+*.JPG
 .DS_Store
