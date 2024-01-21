@@ -3,20 +3,25 @@ import numpy as np
 import os
 from imagededup.methods import CNN
 
+from src.literalProperties.faceProcessor import FaceProcessor
+
 class LiteralProcessor:
 
     imageToProcess = None
     basePath = 'assets/'
+    cnn_encoding = CNN()
 
     def __init__(self, image):
         self.imageToProcess = image
-    
+        self.faceProcessor = FaceProcessor()
+        
     def process(self):
         print("Found image with dimensions: ", self.imageToProcess.shape, ". Processing.")
         self.duplicateGrouping('photoAlbum1')
-        # print(self.duplicateGroupingHashing('photoAlbum1', 0))
-        # print("Exposure/Histogram Values: "+str(self.exposureValue()))
-        # print("Blurriness Value: "+str(self.blurrinessValue()))
+        self.faceProcessor.faceSegmentation()
+        print(self.duplicateGroupingHashing('photoAlbum1', 0))
+        print("Exposure/Histogram Values: "+str(self.exposureValue()))
+        print("Blurriness Value: "+str(self.blurrinessValue()))
 
     def duplicateGroupingHashing(self, albumName, threshold):
         # TODO: if subject/photo is the same but has been slightly moved then image gives diff hash
@@ -36,9 +41,9 @@ class LiteralProcessor:
         return albumPhotosHash
     
     def duplicateGrouping(self, albumName):
-        cnn_encoding = CNN()
-        cnn_encoding.find_duplicates(image_dir=self.basePath+albumName, min_similarity_threshold=0.95, scores=False, outfile='test.json')
-        return
+        # could merge with hashing approach so there is a reduced cross matching required (cnn more costly than hashing)
+        duplicated_PhotosDict = self.cnn_encoding.find_duplicates(image_dir=self.basePath+albumName, min_similarity_threshold=0.95, scores=False)
+        return duplicated_PhotosDict
 
     def blurrinessValue(self):
        return cv2.Laplacian(self.imageToProcess, cv2.CV_64F).var()

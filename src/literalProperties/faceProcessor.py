@@ -8,6 +8,8 @@ class FaceProcessor:
     basePath = 'assets/'
     encodingNumber = 0
 
+    # TODO: clean up file paths (pass this in from main class/variable when running script??)
+    # TODO: add some more validation checking on the face. Play around with thresholds in the compare_faces() function
     def faceSegmentation(self):
         self.albumPath = self.basePath+'photoAlbum2'
         print(f"Conducting face segmentation and analysis for photos in the folder: {self.albumPath}")
@@ -63,6 +65,6 @@ class FaceProcessor:
             for encoding in photoEncodings:
                 encodingName = 'encoding'+str(self.encodingNumber)
                 allEncodings[encodingName] = (encoding, photoPath)
-                self.encodingNumber +=1
+                self.encodingNumber += 1
 
         return allEncodings
