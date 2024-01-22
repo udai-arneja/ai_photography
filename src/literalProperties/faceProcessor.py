@@ -7,9 +7,15 @@ class FaceProcessor:
 
     basePath = 'assets/'
     encodingNumber = 0
+    """
+    TODO: clean up file paths (pass this in from main class/variable when running script??)
+    TODO: add some more validation checking on the face. Play around with thresholds in the compare_faces() function
+    Other papers for future reference:
+    https://github.com/davidsandberg/facenet    https://pypi.org/project/keras-facenet/
+    https://arxiv.org/abs/1503.03832
+    https://github.com/cmusatyalab/openface
+    """
 
-    # TODO: clean up file paths (pass this in from main class/variable when running script??)
-    # TODO: add some more validation checking on the face. Play around with thresholds in the compare_faces() function
     def faceSegmentation(self):
         self.albumPath = self.basePath+'photoAlbum2'
         print(f"Conducting face segmentation and analysis for photos in the folder: {self.albumPath}")

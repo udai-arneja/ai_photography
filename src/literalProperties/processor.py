@@ -11,11 +11,11 @@ class LiteralProcessor:
     basePath = 'assets/'
     cnn_encoding = CNN()
 
-    def __init__(self, image):
-        self.imageToProcess = image
+    def __init__(self, albumPath):
         self.faceProcessor = FaceProcessor()
+        self.basePathAlbum = self.basePath + albumPath + '/'
         
-    def process(self):
+    def processAlbum(self):
         print("Found image with dimensions: ", self.imageToProcess.shape, ". Processing.")
         self.duplicateGrouping('photoAlbum1')
         self.faceProcessor.faceSegmentation()
@@ -46,7 +46,15 @@ class LiteralProcessor:
         return duplicated_PhotosDict
 
     def blurrinessValue(self):
-       return cv2.Laplacian(self.imageToProcess, cv2.CV_64F).var()
+
+        return
+
+    def calcBlurriness(self, image):
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        blur_map = cv2.Laplacian(image, cv2.CV_64F)
+        score = np.var(blur_map)
+
+        return blur_map, score, bool(score<20)
 
     def exposureValue(self): # -1, 0, 1 -> under, normal, over
         # TODO: add thresholding logic, initial version relative to spikes in histogram?
@@ -80,5 +88,11 @@ class LiteralProcessor:
         # cv2.waitKey()
 
         # TODO: get top 5/10, bottom 5/10 average. subtract max value from photo. if remainder is greater than 0 then over/under exposed => return  -1, +1
+        """ TODO: papers/githubs => check how it determines whether/what to change in the photo
+                https://github.com/mahmoudnafifi/Deep_White_Balance  
+                https://github.com/mahmoudnafifi/Exposure_Correction  https://arxiv.org/pdf/2003.11596.pdf
+                https://github.com/hmshreyas7/low-light-detection
+        """
+        
         return -1
 
