@@ -16,8 +16,8 @@ class FaceProcessor:
     https://github.com/cmusatyalab/openface
     """
 
-    def faceSegmentation(self):
-        self.albumPath = self.basePath+'photoAlbum2'
+    def faceSegmentation(self, albumName):
+        self.albumPath = self.basePath+albumName
         print(f"Conducting face segmentation and analysis for photos in the folder: {self.albumPath}")
         albumPhotosFullPath = os.listdir(self.albumPath)
 
@@ -53,7 +53,7 @@ class FaceProcessor:
             os.makedirs(newAlbumPath)
         
         for face, listOfData in organisedEncodings.items():
-            newFacePath = self.albumPath+"_face_organised/"+face
+            newFacePath = newAlbumPath+"/"+face
             if not os.path.exists(newFacePath):
                 print(f"Creating folder for new face at: {newFacePath}")
                 os.makedirs(newFacePath)

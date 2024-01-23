@@ -1,3 +1,4 @@
+import shutil
 import cv2
 import numpy as np
 import os
@@ -13,15 +14,15 @@ class LiteralProcessor:
 
     def __init__(self, albumPath):
         self.faceProcessor = FaceProcessor()
-        self.basePathAlbum = self.basePath + albumPath + '/'
+        self.basePathAlbum = self.basePath + albumPath
         
     def processAlbum(self):
-        print("Found image with dimensions: ", self.imageToProcess.shape, ". Processing.")
+        # print("Found image with dimensions: ", self.imageToProcess.shape, ". Processing.")
         self.duplicateGrouping('photoAlbum1')
-        self.faceProcessor.faceSegmentation()
-        print(self.duplicateGroupingHashing('photoAlbum1', 0))
-        print("Exposure/Histogram Values: "+str(self.exposureValue()))
-        print("Blurriness Value: "+str(self.blurrinessValue()))
+        # self.faceProcessor.faceSegmentation('photoAlbum1')
+        # print(self.duplicateGroupingHashing('photoAlbum1', 0))
+        # print("Exposure/Histogram Values: "+str(self.exposureValue()))
+        # print("Blurriness Value: "+str(self.blurrinessValue()))
 
     def duplicateGroupingHashing(self, albumName, threshold):
         # TODO: if subject/photo is the same but has been slightly moved then image gives diff hash
@@ -42,9 +43,43 @@ class LiteralProcessor:
     
     def duplicateGrouping(self, albumName):
         # could merge with hashing approach so there is a reduced cross matching required (cnn more costly than hashing)
-        duplicated_PhotosDict = self.cnn_encoding.find_duplicates(image_dir=self.basePath+albumName, min_similarity_threshold=0.95, scores=False)
+        duplicated_PhotosDict = self.cnn_encoding.find_duplicates(image_dir=self.basePathAlbum, min_similarity_threshold=0.95, scores=False)
+        groupedPhotos = self.groupDuplicatedPhotos(duplicated_PhotosDict)
+        self.createFolders(groupedPhotos)
         return duplicated_PhotosDict
 
+    def groupDuplicatedPhotos(self, imagesDict: dict[str, list[str]]):
+        allGroups = []
+        while imagesDict:
+            image, listOfImages = imagesDict.popitem()
+            currentSet = set({image})
+            while listOfImages:
+                currImage = listOfImages.pop(0)
+                if not currImage in currentSet:
+                    listOfImages += imagesDict[currImage]
+                    imagesDict.pop(currImage)
+                    currentSet.add(currImage)
+            allGroups.append(currentSet)
+        return allGroups
+    
+    def createFolders(self, groupedPhotos: list[set[str]]):
+        duplicateFoldersPath = self.basePathAlbum+'_duplicates'
+        if not os.path.exists(duplicateFoldersPath):
+                print(f"Creating folder for duplicate groupings at: {duplicateFoldersPath}")
+                os.makedirs(duplicateFoldersPath)
+
+        groupNumber = 0
+        for imagesSet in groupedPhotos:
+            duplicateGroupPath = duplicateFoldersPath+"/"+str(groupNumber)
+            if not os.path.exists(duplicateGroupPath):
+                print(f"Creating folder for new duplicate group {groupNumber} at: {duplicateGroupPath}")
+                os.makedirs(duplicateGroupPath)
+            for imageName in imagesSet:
+                oldPhotoPath = self.basePathAlbum+"/"+imageName
+                shutil.copy(oldPhotoPath, duplicateGroupPath)
+            groupNumber+=1
+        return
+        
     def blurrinessValue(self):
 
         return

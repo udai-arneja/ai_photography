@@ -16,11 +16,11 @@ class PhotoProcessor:
 
     def __init__(self) -> None:
         self.loadImages()
-        self.literalProcessor = LiteralProcessor(self.imageToProcess)
+        self.literalProcessor = LiteralProcessor('photoAlbum1')
         None
 
     def literalProperties(self):
-        self.literalProcessor.process()
+        self.literalProcessor.processAlbum()
 
     def semanticProperties():
         None
