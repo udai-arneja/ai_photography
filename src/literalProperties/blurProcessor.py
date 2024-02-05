@@ -58,7 +58,7 @@ def lbpCode(im_gray, threshold):
 	s5 = s(interp5 - I-threshold)
 	s6 = s(interp6 - I-threshold)
 	s7 = s(interp7 - I-threshold)
-	LBP81 = s0 * 1 + s1 * 2+s2 * 4   + s3 * 8+ s4 * 16  + s5 * 32  + s6 * 64  + s7 * 128
+	LBP81 = s0 * 1 + s1 * 2+s2 * 4 + s3 * 8+ s4 * 16  + s5 * 32  + s6 * 64  + s7 * 128
 	LBP81.astype(int)
 
 	U = np.abs(s0 - s7) + np.abs(s1 - s0) + np.abs(s2 - s1) + np.abs(s3 - s2) + np.abs(s4 - s3) + np.abs(s5 - s4) + np.abs(s6 - s5) + np.abs(s7 - s6)
@@ -100,6 +100,9 @@ if __name__=='__main__':
 
 	sharpness_map = (sharpness_map*255).astype('uint8')
 	concat = np.concatenate((img, np.stack((sharpness_map,)*3, -1)), axis=1)
+	oldfile = args['input']
+	newfile = args['input'][0: len(oldfile)-4] + '_sharpness.jpg'
+	cv2.imwrite(newfile, np.stack((sharpness_map,)*3, -1))
 	cv2.imshow('img_concat', concat)
 
 	cv2.waitKey(0)

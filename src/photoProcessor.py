@@ -15,7 +15,6 @@ class PhotoProcessor:
     literalProcessor = None
 
     def __init__(self) -> None:
-        self.loadImages()
         self.literalProcessor = LiteralProcessor('photoAlbum1')
         None
 
@@ -24,9 +23,3 @@ class PhotoProcessor:
 
     def semanticProperties():
         None
-    
-    def loadImages(self):
-        path = 'assets/photoAlbum1/IMG_6979.JPG'
-        print('Loading image')
-        self.imageToProcess = cv2.imread(path)
-        print('Image loaded.')
