@@ -17,74 +17,45 @@ class LiteralProcessor:
         self.basePathAlbum = self.basePath + albumPath
         
     def processAlbum(self):
-        # print("Found image with dimensions: ", self.imageToProcess.shape, ". Processing.")
-        self.duplicateGrouping('photoAlbum1')
+        # group photos based on duplicates
+        self.duplicateGrouping()
+
+        # identify blurry images and separate
+        self.blurrinessSeparation(40)
+
         # self.faceProcessor.faceSegmentation('photoAlbum1')
         # print(self.duplicateGroupingHashing('photoAlbum1', 0))
         # print("Exposure/Histogram Values: "+str(self.exposureValue()))
         # print("Blurriness Value: "+str(self.blurrinessValue()))
-
-    def duplicateGroupingHashing(self, albumName, threshold):
-        # TODO: if subject/photo is the same but has been slightly moved then image gives diff hash
-        # need to see how much by & what other hashings may be better
-        path = self.basePath+albumName
-        albumPhotosFullPath = os.listdir(path)
-        
-        albumPhotosHash = {}
-
-        for photo in albumPhotosFullPath:
-            photoPath = path+'/'+photo
-            hsh = cv2.img_hash.BlockMeanHash_create()
-            photoHash = hsh.compute(cv2.imread(photoPath))
-            integerHashValue = int.from_bytes(photoHash.tobytes(), byteorder='big', signed=False)
-            albumPhotosHash[integerHashValue] = (photoPath)
-
-        return albumPhotosHash
     
-    def duplicateGrouping(self, albumName):
+    def duplicateGrouping(self):
         # could merge with hashing approach so there is a reduced cross matching required (cnn more costly than hashing)
-        duplicated_PhotosDict = self.cnn_encoding.find_duplicates(image_dir=self.basePathAlbum, min_similarity_threshold=0.95, scores=False)
+        duplicated_PhotosDict = self.cnn_encoding.find_duplicates(image_dir=self.basePathAlbum, min_similarity_threshold=0.80, scores=False)
         groupedPhotos = self.groupDuplicatedPhotos(duplicated_PhotosDict)
         self.createFolders(groupedPhotos)
         return duplicated_PhotosDict
-
-    def groupDuplicatedPhotos(self, imagesDict: dict[str, list[str]]):
-        allGroups = []
-        while imagesDict:
-            image, listOfImages = imagesDict.popitem()
-            currentSet = set({image})
-            while listOfImages:
-                currImage = listOfImages.pop(0)
-                if not currImage in currentSet:
-                    listOfImages += imagesDict[currImage]
-                    imagesDict.pop(currImage)
-                    currentSet.add(currImage)
-            allGroups.append(currentSet)
-        return allGroups
-    
-    def createFolders(self, groupedPhotos: list[set[str]]):
-        duplicateFoldersPath = self.basePathAlbum+'_duplicates'
-        if not os.path.exists(duplicateFoldersPath):
-                print(f"Creating folder for duplicate groupings at: {duplicateFoldersPath}")
-                os.makedirs(duplicateFoldersPath)
-
-        groupNumber = 0
-        for imagesSet in groupedPhotos:
-            duplicateGroupPath = duplicateFoldersPath+"/"+str(groupNumber)
-            if not os.path.exists(duplicateGroupPath):
-                print(f"Creating folder for new duplicate group {groupNumber} at: {duplicateGroupPath}")
-                os.makedirs(duplicateGroupPath)
-            for imageName in imagesSet:
-                oldPhotoPath = self.basePathAlbum+"/"+imageName
-                shutil.copy(oldPhotoPath, duplicateGroupPath)
-            groupNumber+=1
-        return
         
-    def blurrinessValue(self):
+    def blurrinessSeparation(self, threshold):
+        allImagesPaths = os.listdir(self.basePathAlbum)
+        blurryImages = []
+        nonBlurryImages = []
+        for imagePath in allImagesPaths:
+            if not imagePath.startswith('.'): # dont include hidden files
+                image = cv2.imread(self.basePathAlbum+'/'+imagePath)
+                _, blurrinessScore, _ = self.calcBlurriness(image)
+                if blurrinessScore < threshold:
+                    blurryImages.append(imagePath)
+                else:
+                    nonBlurryImages.append(imagePath)
+        
+        print(f"Found {len(blurryImages)} blurry images, {len(nonBlurryImages)} non-blurry images. Creating two separate folders.")
+        self.createFoldersBlurriness(blurryImages, nonBlurryImages)
 
-        return
-
-    def calcBlurriness(self, image):
+    def calcBlurriness(self, image: np.ndarray):
+        """
+        https://github.com/WillBrennan/BlurDetection2
+        https://github.com/isalirezag/HiFST ?
+        """
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         blur_map = cv2.Laplacian(image, cv2.CV_64F)
         score = np.var(blur_map)
@@ -131,3 +102,53 @@ class LiteralProcessor:
         
         return -1
 
+    def groupDuplicatedPhotos(self, imagesDict: dict[str, list[str]]):
+        allGroups = []
+        while imagesDict:
+            image, listOfImages = imagesDict.popitem()
+            currentSet = set({image})
+            while listOfImages:
+                currImage = listOfImages.pop(0)
+                if not currImage in currentSet:
+                    listOfImages += imagesDict[currImage]
+                    imagesDict.pop(currImage)
+                    currentSet.add(currImage)
+            allGroups.append(currentSet)
+        return allGroups
+    
+    def createFolders(self, groupedPhotos: list[set[str]]):
+        duplicateFoldersPath = self.basePathAlbum+'_duplicates'
+        self.createFolder(duplicateFoldersPath)
+
+        groupNumber = 0
+        for imagesSet in groupedPhotos:
+            duplicateGroupPath = duplicateFoldersPath+"/"+str(groupNumber)
+            if not os.path.exists(duplicateGroupPath):
+                print(f"Creating folder for new duplicate group {groupNumber} at: {duplicateGroupPath}")
+                os.makedirs(duplicateGroupPath)
+            for imageName in imagesSet:
+                oldPhotoPath = self.basePathAlbum+"/"+imageName
+                shutil.copy(oldPhotoPath, duplicateGroupPath)
+            groupNumber+=1
+    
+    def createFoldersBlurriness(self, blurryImages, nonBlurryImages):
+        blurryImagesPath = self.basePathAlbum+'_blurry'
+        notBlurryImagesPath = self.basePathAlbum+'_notBlurry'
+        self.createFolder(blurryImagesPath)
+        self.createFolder(notBlurryImagesPath)
+
+        for imageName in blurryImages:
+            oldPhotoPath = self.basePathAlbum+"/"+imageName
+            shutil.copy(oldPhotoPath, blurryImagesPath)
+
+        for imageName in nonBlurryImages:
+            oldPhotoPath = self.basePathAlbum+"/"+imageName
+            shutil.copy(oldPhotoPath, notBlurryImagesPath)
+
+        print(f"Folders for blurry images created at {blurryImagesPath} and {notBlurryImagesPath}")
+
+    
+    def createFolder(self, path):
+        if not os.path.exists(path):
+            print(f"Creating folder for duplicate groupings at: {path}")
+            os.makedirs(path)
