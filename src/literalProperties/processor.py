@@ -18,16 +18,13 @@ class LiteralProcessor:
         self.exposureProcessor = ExposureProcessor(self.basePathAlbum)
         
     def processAlbum(self):
-        # group photos based on duplicates
+        """ 
+        TODO: add some ordering / interconnectivity between functionalities 
+        to prevent unecessary duplication of images
+        """
         self.duplicateProcessor.duplicateGrouping()
-
-        # # identify blurry images and separate
         self.blurrinessSeparation(40)
-
-        # # face segmentation
         self.faceProcessor.faceSegmentation('photoAlbum1')
-
-        # exposure
         self.exposureProcessor.exposureSeparation()
         
     def blurrinessSeparation(self, threshold):

@@ -13,6 +13,12 @@ import numpy as np
         https://github.com/hmshreyas7/low-light-detection
 """
 
+""""TODO: 
+    add face segmentation => produce a mask => push mask through hist image to check exposure quality
+    https://pyimagesearch.com/2021/01/19/image-masking-with-opencv/
+    (could this also be applied to blur processing?)
+"""
+
 class ExposureProcessor:
 
     def __init__(self, basePathAlbum) -> None:
