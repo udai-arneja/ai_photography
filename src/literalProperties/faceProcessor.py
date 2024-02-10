@@ -32,7 +32,7 @@ class FaceProcessor:
             allEncodingsValues = list(allEncodings.values())
 
             for encoding, photoPath in allEncodingsValues:
-                result = face_recognition.compare_faces([currEncoding], encoding)
+                result = face_recognition.compare_faces([currEncoding], encoding, 0.45)
                 if result[0]:
                     organisedEncodings[currEncodingName].append((encoding, photoPath))
 
@@ -61,16 +61,17 @@ class FaceProcessor:
                 shutil.copy(photoPath, newFacePath)
         return
 
-    def getAllFaceEncodings(self, albumPhotosFullPath) -> dict:
+    def getAllFaceEncodings(self, albumPhotosFullPath: list[str]) -> dict:
         allEncodings = {}
 
         for photoName in albumPhotosFullPath:
-            photoPath = self.albumPath+'/'+photoName
-            loadedImage = face_recognition.load_image_file(photoPath)
-            photoEncodings:list[ndarray] = face_recognition.face_encodings(loadedImage)
-            for encoding in photoEncodings:
-                encodingName = 'encoding'+str(self.encodingNumber)
-                allEncodings[encodingName] = (encoding, photoPath)
-                self.encodingNumber += 1
+            if not photoName.startswith('.'):
+                photoPath = self.albumPath+'/'+photoName
+                loadedImage = face_recognition.load_image_file(photoPath)
+                photoEncodings:list[ndarray] = face_recognition.face_encodings(loadedImage)
+                for encoding in photoEncodings:
+                    encodingName = 'encoding'+str(self.encodingNumber)
+                    allEncodings[encodingName] = (encoding, photoPath)
+                    self.encodingNumber += 1
 
         return allEncodings
