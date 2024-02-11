@@ -3,6 +3,7 @@ import cv2
 import os
 import numpy as np
 
+# from src.literalProperties.imageMatchingProcessor import ImageMatchingProcessor
 from src.literalProperties.duplicateProcessor import DuplicateProcessor
 from src.literalProperties.exposureProcessor import ExposureProcessor
 from src.literalProperties.faceProcessor import FaceProcessor
@@ -16,6 +17,7 @@ class LiteralProcessor:
         self.faceProcessor = FaceProcessor()
         self.duplicateProcessor = DuplicateProcessor(self.basePathAlbum)
         self.exposureProcessor = ExposureProcessor(self.basePathAlbum)
+        # self.imageMatchingProcessor = ImageMatchingProcessor(self.basePathAlbum)
         
     def processAlbum(self):
         """ 
@@ -26,6 +28,7 @@ class LiteralProcessor:
         self.blurrinessSeparation(40)
         self.faceProcessor.faceSegmentation('photoAlbum1')
         self.exposureProcessor.exposureSeparation()
+        # self.imageMatchingProcessor.imageMatching()
         
     def blurrinessSeparation(self, threshold):
         allImagesPaths = os.listdir(self.basePathAlbum)
