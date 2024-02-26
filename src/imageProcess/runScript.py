@@ -1,4 +1,4 @@
-from src.photoProcessor import PhotoProcessor
+from photoProcessor import PhotoProcessor
 
 if __name__ == '__main__':
     print("Starting Program")

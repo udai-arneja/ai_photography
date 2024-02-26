@@ -1,4 +1,6 @@
-from src.literalProperties.processor import LiteralProcessor
+from imageProcess.literalProperties.processor import LiteralProcessor
+
+LiteralProcessor
 
 class PhotoProcessor:
 

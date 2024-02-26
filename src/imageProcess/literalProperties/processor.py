@@ -2,11 +2,9 @@ import shutil
 import cv2
 import os
 import numpy as np
-
-# from src.literalProperties.imageMatchingProcessor import ImageMatchingProcessor
-from src.literalProperties.duplicateProcessor import DuplicateProcessor
-from src.literalProperties.exposureProcessor import ExposureProcessor
-from src.literalProperties.faceProcessor import FaceProcessor
+from imageProcess.literalProperties.duplicateProcessor import DuplicateProcessor
+from imageProcess.literalProperties.exposureProcessor import ExposureProcessor
+from imageProcess.literalProperties.faceProcessor import FaceProcessor
 
 class LiteralProcessor:
 
