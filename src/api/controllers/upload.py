@@ -1,8 +1,7 @@
 
 
 from fastapi import APIRouter, File, Form, UploadFile
-from pydantic import BaseModel
-from controllers.upload_service import PhotoUploadService
+from api.service.upload_service import PhotoUploadService
 
 router = APIRouter()
 
