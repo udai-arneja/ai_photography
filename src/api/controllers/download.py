@@ -9,4 +9,4 @@ router = APIRouter()
 def uploadSingleImage(
         user: str,
     ):
-    return PhotoDownloadService.getUserAlbums(user)
+    return PhotoDownloadService().getUserAlbums(user)
