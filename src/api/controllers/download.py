@@ -5,8 +5,8 @@ from api.service.download import PhotoDownloadService
 
 router = APIRouter()
 
-@router.post("/getUserAlbum")
-def uploadSingleImage(
+@router.get("/getUserAlbum")
+def getUserAlbums(
         user: str,
     ):
     return PhotoDownloadService().getUserAlbums(user)
