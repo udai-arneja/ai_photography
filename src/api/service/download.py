@@ -1,5 +1,8 @@
+import base64
 from datetime import datetime
 import os
+
+from fastapi.responses import FileResponse
 
 class PhotoDownloadService:
 
@@ -25,10 +28,14 @@ class PhotoDownloadService:
     def createAlbumData(self, albumName, location):
         creationTime = os.stat(location).st_birthtime
         readableTime = datetime.utcfromtimestamp(creationTime).strftime('%Y-%m-%d %H:%M:%S')
-
         noOfImages = len(os.listdir(location))
+        firstImageLocation = location+"/"+os.listdir(location)[0]
+        image_data_base64 = ""
+        with open(firstImageLocation, "rb") as image_file:
+            image_data_base64 = base64.b64encode(image_file.read()).decode("utf-8")
         return {
             "name": albumName,
             "created": readableTime,
-            "quanImages":noOfImages
+            "quanImages": noOfImages,
+            "profileImageEncoded": image_data_base64
         }

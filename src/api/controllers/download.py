@@ -1,7 +1,7 @@
-from fastapi import APIRouter
+import json
+from fastapi import APIRouter, Response
 
 from api.service.download import PhotoDownloadService
-
 
 router = APIRouter()
 
@@ -9,4 +9,7 @@ router = APIRouter()
 def getUserAlbums(
         user: str,
     ):
-    return PhotoDownloadService().getUserAlbums(user)
+    albumsInfo = PhotoDownloadService().getUserAlbums(user)
+    response_content = json.dumps(albumsInfo)
+    # highly inefficent, try to use StreamingResponse
+    return Response(content=response_content, media_type="application/json")
