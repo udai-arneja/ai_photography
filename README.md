@@ -1,6 +1,12 @@
 # ai_photography
 Using AI/ML techniques to curate and edit photo albums for weddings.
 
+## Running the Application
+
+1. Enter the src section `cd src`
+2. Run `uvicorn main:app --reload` (reload causes recompliation on file changes)
+3. Should be running at port 8000. Open the swagger http://127.0.0.1:8000/docs#/default
+
 ## Value Proposition
 
 Photography is an essential part to any wedding, hoping [other] to capture the most intimate, wonderful times throughout the week. When choosing a photographer, there are multiple considerations, including; professionalism, length of wedding, and number of photos expected.
