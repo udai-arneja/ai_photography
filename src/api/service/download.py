@@ -39,3 +39,14 @@ class PhotoDownloadService:
             "quanImages": noOfImages,
             "profileImageEncoded": image_data_base64
         }
+
+    def getPhotosFromAlbum(self, user: str, albumName:str):
+        albumLocation = self.currLoc+user+"/"+albumName
+        imageEncodings = []
+        for image in os.listdir(albumLocation):
+            image = albumLocation+"/"+image
+            image_data_base64 = ""
+            with open(image, "rb") as image_file:
+                image_data_base64 = base64.b64encode(image_file.read()).decode("utf-8")
+            imageEncodings.append(image_data_base64)
+        return imageEncodings
