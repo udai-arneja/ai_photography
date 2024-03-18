@@ -8,11 +8,12 @@ from imageProcess.literalProperties.faceProcessor import FaceProcessor
 
 class LiteralProcessor:
 
-    basePath = 'assets/'
+    basePath = '/Users/udaiarneja/Github/ai_photography/assets/'
 
     def __init__(self, albumPath):
         self.basePathAlbum = self.basePath + albumPath
-        self.faceProcessor = FaceProcessor()
+        print(self.basePathAlbum)
+        self.faceProcessor = FaceProcessor(self.basePathAlbum)
         self.duplicateProcessor = DuplicateProcessor(self.basePathAlbum)
         self.exposureProcessor = ExposureProcessor(self.basePathAlbum)
         # self.imageMatchingProcessor = ImageMatchingProcessor(self.basePathAlbum)
@@ -24,7 +25,7 @@ class LiteralProcessor:
         """
         self.duplicateProcessor.duplicateGrouping()
         self.blurrinessSeparation(40)
-        self.faceProcessor.faceSegmentation('photoAlbum1')
+        self.faceProcessor.faceSegmentation()
         self.exposureProcessor.exposureSeparation()
         # self.imageMatchingProcessor.imageMatching()
         

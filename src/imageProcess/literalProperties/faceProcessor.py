@@ -16,8 +16,11 @@ class FaceProcessor:
     https://github.com/cmusatyalab/openface
     """
 
-    def faceSegmentation(self, albumName):
-        self.albumPath = self.basePath+albumName
+    def __init__(self, basePath):
+        self.basePath = basePath
+
+    def faceSegmentation(self):
+        self.albumPath = self.basePath
         print(f"Conducting face segmentation and analysis for photos in the folder: {self.albumPath}")
         albumPhotosFullPath = os.listdir(self.albumPath)
 

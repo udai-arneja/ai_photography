@@ -14,8 +14,8 @@ def getUserAlbums(
     # highly inefficent, try to use StreamingResponse
     return Response(content=response_content, media_type="application/json")
 
-@router.get("/processAlbum")
-def get_items_from_album(user: str, albumName: str):
+@router.get("/getPhotosFromAlbum")
+def get_items_from_album(user: str, albumName: str, ):
     albumsInfo = PhotoDownloadService().getPhotosFromAlbum(user, albumName)
     response_content = json.dumps(albumsInfo)
     # highly inefficent, try to use StreamingResponse

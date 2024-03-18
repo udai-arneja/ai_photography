@@ -1,7 +1,5 @@
 from imageProcess.literalProperties.processor import LiteralProcessor
 
-LiteralProcessor
-
 class PhotoProcessor:
 
     """
@@ -17,7 +15,7 @@ class PhotoProcessor:
 
     def __init__(self) -> None:
         self.literalProcessor = LiteralProcessor('photoAlbum1')
-        None
+        pass
 
     def literalProperties(self):
         self.literalProcessor.processAlbum()

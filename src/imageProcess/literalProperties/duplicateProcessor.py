@@ -11,6 +11,7 @@ class DuplicateProcessor:
     
     def duplicateGrouping(self):
         # could merge with hashing approach so there is a reduced cross matching required (cnn more costly than hashing)
+        print(self.basePathAlbum)
         duplicated_PhotosDict = self.cnn_encoding.find_duplicates(image_dir=self.basePathAlbum, min_similarity_threshold=0.80, scores=False)
         groupedPhotos = self.groupDuplicatedPhotos(duplicated_PhotosDict)
         self.createFolders(groupedPhotos)

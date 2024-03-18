@@ -2,8 +2,6 @@ import base64
 from datetime import datetime
 import os
 
-from fastapi.responses import FileResponse
-
 class PhotoDownloadService:
 
     currLoc = "/Users/udaiarneja/Github/ai_photography/assets/"
